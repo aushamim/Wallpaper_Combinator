@@ -15,6 +15,7 @@ tmp_log_file="$parent_folder/combined_images_tmp.log"
 monitor_width=1920
 monitor_height=1080
 num_monitors=2
+increase_variety=false
 
 
 # Calculate combined width for the images based on monitor count
@@ -46,7 +47,10 @@ fi
 
 
 log "[+] Creating combinations"
-for ((i = 0; i < ${#image_files[@]}; i++)); do
+
+if [[ $increase_variety = true ]] then
+  log "[+] Increased Variety"
+  for ((i = 0; i < ${#image_files[@]}; i++)); do
     for ((j = 0; j < ${#image_files[@]}; j++)); do
         # Skip combining an image with itself
         if [ $i -ne $j ]; then
@@ -73,7 +77,39 @@ for ((i = 0; i < ${#image_files[@]}; i++)); do
             log "[ ] Combined \"$img1\" and \"$img2\" into \"$output_filename\""
         fi
     done
-done
+  done
+else
+  for ((i = 0; i < ${#image_files[@]} - 1; i++)); do
+    for ((j = i + 1; j < ${#image_files[@]}; j++)); do
+        # Skip combining an image with itself
+        if [ $i -ne $j ]; then
+            img1="${image_files[$i]}"
+            img2="${image_files[$j]}"
+            
+            output_filename="$output_folder/Combined_$(basename "$img1" | sed 's/\.[^.]*$//')_$(basename "$img2" | sed 's/\.[^.]*$//').jpg"
+            echo "$output_filename" >> "$tmp_log_file"
+
+            if grep -q "$output_filename" "$log_file"; then
+                log "[ ] Skipping already combined images: \"$output_filename\""
+                continue
+            fi
+
+            convert "$img1" -resize "${monitor_width}x${combined_height}^" -gravity center -extent "${monitor_width}x${combined_height}" temp1.jpg
+            convert "$img2" -resize "${monitor_width}x${combined_height}^" -gravity center -extent "${monitor_width}x${combined_height}" temp2.jpg
+            
+            convert temp1.jpg temp2.jpg +append "$output_filename"
+
+            echo "$output_filename" >> "$log_file"
+
+            rm temp1.jpg temp2.jpg
+
+            log "[ ] Combined \"$img1\" and \"$img2\" into \"$output_filename\""
+        fi
+    done
+  done
+fi
+
+
 log "[+] All combinations generated in \"$output_folder\"."
 
 # Cleaning combinations whose source is removed

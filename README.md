@@ -10,10 +10,11 @@ This is used to create multiple spanned wallpaper to set in ubuntu.
 - Skip already generated files.
 - Automatically remove generated combinations of a source file if it is removed from the source folder.
 - Autostart on startup
+- Options to increase variety (will create more files).
 
 # Todo
 
-- Combine multiple image instead of 2 images.
+- Combine multiple image instead of only 2 images.
 - Create combinations for varying resolutions.
 
 # Install
@@ -40,4 +41,4 @@ Then if you want, manually delete the parent folder (It will delete all of the w
 
 - The more wallpaper the more time it will take to generate combined images.
 - If using for the first time, run `generate_combinations.sh` once before enabling autostart. It will create image combinations initially.
-- Use `Variety` or other apps to automatically switch between wallpapers.
+- Use `Variety` or other apps to automatically switch between generated wallpapers.
