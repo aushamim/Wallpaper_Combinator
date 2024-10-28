@@ -18,7 +18,7 @@ script_to_run="$parent_folder/generate_combinations.sh"
 # Monitor the source folder for file changes (create, delete, modify, move)
 inotifywait -m -r -e create -e delete -e modify -e moved_to -e moved_from "$source_folder" "$generator_file" |
 while read -r directory events filename; do
-  log "[+]Change detected in $directory ($events on $filename)"
+  log "[+] Change detected in $directory ($events on $filename)"
   # Run the script
   bash "$script_to_run"
 done

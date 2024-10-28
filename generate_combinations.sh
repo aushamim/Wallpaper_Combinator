@@ -10,6 +10,7 @@ output_folder="$parent_folder/Combined_Images"
 main_log_file="$parent_folder/activities.log"
 log_file="$parent_folder/combined_images.log"
 tmp_log_file="$parent_folder/combined_images_tmp.log"
+max_log_size=10
 
 
 monitor_width=1920
@@ -35,6 +36,13 @@ log() {
 log ""
 log "$(date)"
 log "---"
+
+# Log size check.
+if [[ $(stat -c%s "$main_log_file") -gt $((max_log_size * 1024 * 1024)) ]]; then
+    > "$main_log_file"
+    log "[+] Log file is greater than ${max_log_size} MB. Clearing the file."
+    log "[+] Log file is greater than ${max_log_size} MB. Log file cleared."
+fi
 
 # Get all image files in the source folder (quote to handle spaces)
 mapfile -t image_files < <(find "$source_folder" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \))
@@ -121,10 +129,10 @@ comm -23 "$log_file" "$tmp_log_file" > to_clean.log
 
 while IFS= read -r file; do
   if [[ -f "$file" ]]; then
-    log "Deleting $file"
+    log "[ ] Deleting $file"
     rm "$file"
   else
-    log "File not found: $file"
+    log "[ ] File not found: $file"
   fi
 done < to_clean.log
 
