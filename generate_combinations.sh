@@ -33,16 +33,16 @@ log() {
     echo "$1" | tee -a "$main_log_file"
 }
 
-log ""
-log "$(date)"
-log "---"
-
 # Log size check.
 if [[ $(stat -c%s "$main_log_file") -gt $((max_log_size * 1024 * 1024)) ]]; then
     > "$main_log_file"
     log "[+] Log file is greater than ${max_log_size} MB. Clearing the file."
     log "[+] Log file is greater than ${max_log_size} MB. Log file cleared."
 fi
+
+log ""
+log "$(date)"
+log "---"
 
 # Get all image files in the source folder (quote to handle spaces)
 mapfile -t image_files < <(find "$source_folder" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \))
